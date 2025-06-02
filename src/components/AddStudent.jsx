@@ -1,41 +1,76 @@
 import "../App.css";
 import { useState } from "react";
 
-function AddStudent({ students, setStudents }) {
+function AddStudent({ students, setStudents, selectedClass }) {
   const [name, setName] = useState("");
   const [rollNumber, setRollNumber] = useState("");
+  const [photo, setPhoto] = useState(null);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateName = (input) => /^[A-Za-z\s]+$/.test(input);
-  const validateRollNumber = (input) => /^\d+$/.test(input);
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
+    // Validation
     if (!name.trim() || !rollNumber.trim()) {
-      setError("Both fields are required");
+      setError("Name and Roll Number are required!");
+      setIsSubmitting(false);
       return;
     }
 
-    if (!validateName(name)) {
-      setError("Name should contain only alphabets");
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      setError("Name should only contain letters!");
+      setIsSubmitting(false);
       return;
     }
 
-    if (!validateRollNumber(rollNumber)) {
-      setError("Roll number should contain only digits");
+    if (!/^\d+$/.test(rollNumber)) {
+      setError("Roll Number should only contain digits!");
+      setIsSubmitting(false);
       return;
     }
 
-    if (students.some((student) => student.rollNumber === rollNumber)) {
-      setError("Roll number already exists");
+    // Check for duplicate roll number in current class
+    const isDuplicate = students.some(
+      (student) =>
+        student.rollNumber === rollNumber && student.class === selectedClass
+    );
+
+    if (isDuplicate) {
+      setError(`Roll No. ${rollNumber} already exists in ${selectedClass}!`);
+      setIsSubmitting(false);
       return;
     }
 
-    setStudents([...students, { name, rollNumber }]);
+    // Create new student object
+    const newStudent = {
+      name: name.trim(),
+      rollNumber: rollNumber.trim(),
+      class: selectedClass,
+      photo: photo || null,
+    };
+
+    // Add student
+    setStudents(newStudent);
+
+    // Reset form
     setName("");
     setRollNumber("");
-    setError("");
+    setPhoto(null);
+    setIsSubmitting(false);
   };
 
   return (
@@ -47,33 +82,46 @@ function AddStudent({ students, setStudents }) {
           <input
             type="text"
             value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setError("");
-            }}
+            onChange={(e) => setName(e.target.value)}
             className="w-full p-2 border rounded"
             placeholder="Enter student name"
+            required
           />
         </div>
+
         <div>
           <label className="block mb-1">Roll Number</label>
           <input
             type="text"
             value={rollNumber}
-            onChange={(e) => {
-              setRollNumber(e.target.value);
-              setError("");
-            }}
+            onChange={(e) => setRollNumber(e.target.value)}
             className="w-full p-2 border rounded"
             placeholder="Enter roll number"
+            required
           />
         </div>
+
+        <div>
+          <label className="block mb-1">Student Photo (Optional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="w-full p-2 border rounded"
+          />
+          {photo && (
+            <img src={photo} alt="Preview" className="mt-2 h-20 rounded" />
+          )}
+        </div>
+
         {error && <p className="text-red-500">{error}</p>}
+
         <button
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          disabled={isSubmitting}
         >
-          Add Student
+          {isSubmitting ? "Adding..." : "Add Student"}
         </button>
       </form>
     </div>

@@ -4,26 +4,38 @@ import PDFGenerator from "./PDFGenerator";
 
 function AttendanceHistory({ history, setHistory }) {
   const deleteRecord = (index) => {
-    const newHistory = [...history];
-    newHistory.splice(index, 1);
-    setHistory(newHistory);
+    if (
+      window.confirm(
+        "Are you sure you want to delete this entire day's record?"
+      )
+    ) {
+      const newHistory = [...history];
+      newHistory.splice(index, 1);
+      setHistory(newHistory);
+    }
   };
 
   const deleteStudentFromRecord = (recordIndex, rollNumber, status) => {
-    const updatedHistory = [...history];
-    const record = updatedHistory[recordIndex];
+    if (
+      window.confirm(
+        "Are you sure you want to delete this student from the record?"
+      )
+    ) {
+      const updatedHistory = [...history];
+      const record = updatedHistory[recordIndex];
 
-    if (status === "present") {
-      record.present = record.present.filter(
-        (student) => student.rollNumber !== rollNumber
-      );
-    } else {
-      record.absent = record.absent.filter(
-        (student) => student.rollNumber !== rollNumber
-      );
+      if (status === "present") {
+        record.present = record.present.filter(
+          (student) => student.rollNumber !== rollNumber
+        );
+      } else {
+        record.absent = record.absent.filter(
+          (student) => student.rollNumber !== rollNumber
+        );
+      }
+
+      setHistory(updatedHistory);
     }
-
-    setHistory(updatedHistory);
   };
 
   if (history.length === 0) {
