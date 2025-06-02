@@ -135,76 +135,183 @@ function App() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">AttendEase</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Section */}
+      <header className="mb-8">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 text-indigo-600 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              />
+            </svg>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              AttendEase
+            </h1>
+          </div>
+          <div className="text-sm text-gray-500">
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </div>
+        </div>
+        <p className="text-gray-600 mt-2">
+          Streamlined classroom attendance management system
+        </p>
+      </header>
 
       {/* Class Selector */}
-      <div className="mb-4 flex gap-2 items-center">
-        <select
-          value={selectedClass}
-          onChange={(e) => {
-            if (
-              showSave &&
-              !confirm("You have unsaved attendance. Change class anyway?")
-            ) {
-              return;
-            }
-            setSelectedClass(e.target.value);
-            setShowSave(false);
-          }}
-          className="p-2 border rounded flex-1"
-        >
-          {classes.map((cls) => (
-            <option key={cls} value={cls}>
-              {cls}
-            </option>
-          ))}
-        </select>
+      <div className="mb-8 bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="relative flex-1 w-full">
+              <select
+                value={selectedClass}
+                onChange={(e) => {
+                  if (
+                    showSave &&
+                    !confirm(
+                      "You have unsaved attendance. Change class anyway?"
+                    )
+                  ) {
+                    return;
+                  }
+                  setSelectedClass(e.target.value);
+                  setShowSave(false);
+                }}
+                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg appearance-none bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+              >
+                {classes.map((cls) => (
+                  <option key={cls} value={cls}>
+                    Class {cls}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg
+                  className="h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
 
-        <button
-          onClick={() => {
-            const newClass = prompt("Enter new class (e.g., 11-B):");
-            if (newClass) addNewClass(newClass);
-          }}
-          className="bg-gray-200 px-3 py-2 rounded"
-        >
-          + Add Class
-        </button>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  const newClass = prompt("Enter new class (e.g., 11-B):");
+                  if (newClass) addNewClass(newClass);
+                }}
+                className="flex items-center px-4 py-3 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                Add Class
+              </button>
 
-        {selectedClass !== "10-A" && (
-          <button
-            onClick={() => deleteClass(selectedClass)}
-            className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
-          >
-            Delete Class
-          </button>
-        )}
+              {selectedClass !== "10-A" && (
+                <button
+                  onClick={() => deleteClass(selectedClass)}
+                  className="flex items-center px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <AddStudent
-        students={students}
-        setStudents={addStudent}
-        selectedClass={selectedClass}
-      />
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <AddStudent
+            students={students}
+            setStudents={addStudent}
+            selectedClass={selectedClass}
+          />
+        </div>
 
-      <StudentList
-        students={students.filter((s) => s.class === selectedClass)}
-        setStudents={setStudents}
-        attendance={attendance[selectedClass] || {}}
-        toggleAttendance={toggleAttendance}
-        selectedClass={selectedClass}
-      />
+        <div className="lg:col-span-2 space-y-8">
+          <StudentList
+            students={students.filter((s) => s.class === selectedClass)}
+            setStudents={setStudents}
+            attendance={attendance[selectedClass] || {}}
+            toggleAttendance={toggleAttendance}
+            selectedClass={selectedClass}
+          />
 
-      <AttendanceHistory
-        history={history.filter((h) => h.class === selectedClass)}
-        setHistory={setHistory}
-      />
+          <AttendanceHistory
+            history={history.filter((h) => h.class === selectedClass)}
+            setHistory={setHistory}
+          />
+        </div>
+      </div>
 
+      {/* Save Button */}
       {showSave && (
         <button
           onClick={saveAttendance}
-          className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg hover:bg-green-600"
+          className="fixed bottom-6 right-6 flex items-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-105"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
           Save Today's Attendance
         </button>
       )}

@@ -48,97 +48,267 @@ function AttendanceHistory({ history, setHistory }) {
   }
 
   return (
-    <div className="p-4 border rounded">
-      <h2 className="text-xl font-semibold mb-4">Attendance History</h2>
-      <div className="space-y-6">
-        {history.map((record, index) => (
-          <div key={index} className="border-b pb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-lg">{record.date}</h3>
-              <div className="flex space-x-2">
-                <PDFGenerator record={record} />
-                <button
-                  onClick={() => deleteRecord(index)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Delete Entire Day
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-green-50 p-3 rounded">
-                <h4 className="font-medium text-green-700 mb-3">
-                  Present Students ({record.present.length})
-                </h4>
-                <div className="space-y-2">
-                  {record.present.map((student) => (
-                    <div
-                      key={student.rollNumber}
-                      className="bg-white p-2 rounded shadow"
-                    >
-                      <div className="grid grid-cols-3 gap-2 items-center">
-                        <div className="col-span-2">
-                          <p className="font-medium">{student.name}</p>
-                          <p className="text-sm text-gray-500">
-                            Roll No: {student.rollNumber}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() =>
-                            deleteStudentFromRecord(
-                              index,
-                              student.rollNumber,
-                              "present"
-                            )
-                          }
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm justify-self-end"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-red-50 p-3 rounded">
-                <h4 className="font-medium text-red-700 mb-3">
-                  Absent Students ({record.absent.length})
-                </h4>
-                <div className="space-y-2">
-                  {record.absent.map((student) => (
-                    <div
-                      key={student.rollNumber}
-                      className="bg-white p-2 rounded shadow"
-                    >
-                      <div className="grid grid-cols-3 gap-2 items-center">
-                        <div className="col-span-2">
-                          <p className="font-medium">{student.name}</p>
-                          <p className="text-sm text-gray-500">
-                            Roll No: {student.rollNumber}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() =>
-                            deleteStudentFromRecord(
-                              index,
-                              student.rollNumber,
-                              "absent"
-                            )
-                          }
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm justify-self-end"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+    <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-white">
+              Attendance History
+            </h2>
+            <p className="text-indigo-100">
+              Track and manage past attendance records
+            </p>
           </div>
-        ))}
+          <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+            {history.length} {history.length === 1 ? "Record" : "Records"}
+          </span>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-8">
+        {history.length === 0 ? (
+          <div className="text-center py-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="mx-auto h-16 w-16 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              No attendance records found
+            </h3>
+            <p className="mt-2 text-gray-500">
+              Attendance records will appear here once created
+            </p>
+          </div>
+        ) : (
+          history.map((record, index) => (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-500 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {record.date}
+                  </h3>
+                </div>
+                <div className="flex space-x-3">
+                  <PDFGenerator
+                    record={record}
+                    className="flex items-center text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
+                  />
+                  <button
+                    onClick={() => deleteRecord(index)}
+                    className="flex items-center px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm font-medium hover:bg-red-100 transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Delete Day
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+                <div className="border border-green-100 rounded-lg overflow-hidden">
+                  <div className="bg-green-50 px-4 py-3 border-b border-green-100 flex justify-between items-center">
+                    <h4 className="font-medium text-green-800 flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-2 text-green-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Present Students ({record.present.length})
+                    </h4>
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                      {Math.round(
+                        (record.present.length /
+                          (record.present.length + record.absent.length)) *
+                          100
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <div className="divide-y divide-green-50">
+                    {record.present.length > 0 ? (
+                      record.present.map((student) => (
+                        <div
+                          key={student.rollNumber}
+                          className="p-4 hover:bg-green-50 transition-colors"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {student.name}
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Roll No: {student.rollNumber}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() =>
+                                deleteStudentFromRecord(
+                                  index,
+                                  student.rollNumber,
+                                  "present"
+                                )
+                              }
+                              className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition-colors"
+                              title="Remove student"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        No students were present this day
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="border border-red-100 rounded-lg overflow-hidden">
+                  <div className="bg-red-50 px-4 py-3 border-b border-red-100 flex justify-between items-center">
+                    <h4 className="font-medium text-red-800 flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-2 text-red-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                      Absent Students ({record.absent.length})
+                    </h4>
+                    <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                      {Math.round(
+                        (record.absent.length /
+                          (record.present.length + record.absent.length)) *
+                          100
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <div className="divide-y divide-red-50">
+                    {record.absent.length > 0 ? (
+                      record.absent.map((student) => (
+                        <div
+                          key={student.rollNumber}
+                          className="p-4 hover:bg-red-50 transition-colors"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {student.name}
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Roll No: {student.rollNumber}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() =>
+                                deleteStudentFromRecord(
+                                  index,
+                                  student.rollNumber,
+                                  "absent"
+                                )
+                              }
+                              className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition-colors"
+                              title="Remove student"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        All students were present this day
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
