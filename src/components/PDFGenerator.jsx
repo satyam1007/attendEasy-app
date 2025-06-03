@@ -5,7 +5,7 @@ function PDFGenerator({ record }) {
   const generatePDF = () => {
     const doc = new jsPDF();
 
-    // Header
+    // Header bar
     doc.setFillColor(63, 81, 181); // Blue
     doc.rect(0, 0, 220, 30, "F");
 
@@ -18,17 +18,17 @@ function PDFGenerator({ record }) {
     doc.setFontSize(12);
     doc.text(`Date: ${record.date}`, 14, 40);
 
-    // Summary Section
+    // Summary
     doc.setFontSize(14);
     doc.setTextColor(63, 81, 181);
     doc.text("Summary", 14, 55);
 
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
     const total = record.present.length + record.absent.length;
     const presentCount = record.present.length;
     const absentCount = record.absent.length;
 
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
     doc.text(`Total Students: ${total}`, 20, 65);
     doc.setTextColor(46, 125, 50);
     doc.text(
@@ -47,22 +47,30 @@ function PDFGenerator({ record }) {
     doc.setDrawColor(200, 200, 200);
     doc.line(14, 90, 196, 90);
 
-    // Prepare table data
-    const tableData = [
-      ...record.present.map((s) => ["Present", s.name, s.rollNumber]),
-      ...record.absent.map((s) => ["Absent", s.name, s.rollNumber]),
-    ];
-
-    // Add Table Title
     doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
     doc.text("Attendance List", 14, 105);
 
-    // Table
+    // Prepare table data with metadata (status and row color)
+    const tableData = [
+      ...record.present.map((s) => ({
+        status: "Present",
+        name: s.name,
+        rollNumber: s.rollNumber,
+        rowColor: [232, 245, 233], // Light green
+      })),
+      ...record.absent.map((s) => ({
+        status: "Absent",
+        name: s.name,
+        rollNumber: s.rollNumber,
+        rowColor: [255, 235, 238], // Light red
+      })),
+    ];
+
+    // AutoTable with colored rows
     autoTable(doc, {
       startY: 110,
       head: [["Status", "Name", "Roll Number"]],
-      body: tableData,
+      body: tableData.map((row) => [row.status, row.name, row.rollNumber]),
       styles: {
         fontSize: 11,
         cellPadding: 4,
@@ -75,6 +83,13 @@ function PDFGenerator({ record }) {
       columnStyles: {
         0: { halign: "center" },
         2: { halign: "center" },
+      },
+      didParseCell: (data) => {
+        if (data.section === "body") {
+          const rowIndex = data.row.index;
+          const bgColor = tableData[rowIndex].rowColor;
+          data.cell.styles.fillColor = bgColor;
+        }
       },
     });
 
