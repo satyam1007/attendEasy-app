@@ -49,13 +49,13 @@ function AttendanceHistory({ history, setHistory }) {
 
   return (
     <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               Attendance History
             </h2>
-            <p className="text-indigo-100">
+            <p className="text-indigo-100 text-sm sm:text-base">
               Track and manage past attendance records
             </p>
           </div>
@@ -65,12 +65,12 @@ function AttendanceHistory({ history, setHistory }) {
         </div>
       </div>
 
-      <div className="p-6 space-y-8">
+      <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
         {history.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-8 sm:py-12">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="mx-auto h-16 w-16 text-gray-400"
+              className="mx-auto h-12 sm:h-16 w-12 sm:w-16 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -82,10 +82,10 @@ function AttendanceHistory({ history, setHistory }) {
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">
+            <h3 className="mt-3 sm:mt-4 text-lg font-medium text-gray-900">
               No attendance records found
             </h3>
-            <p className="mt-2 text-gray-500">
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500">
               Attendance records will appear here once created
             </p>
           </div>
@@ -95,7 +95,7 @@ function AttendanceHistory({ history, setHistory }) {
               key={index}
               className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+              <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div className="flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -111,22 +111,22 @@ function AttendanceHistory({ history, setHistory }) {
                       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                  <h3 className="text-lg font-semibold text-gray-800">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-800">
                     {record.date}
                   </h3>
                 </div>
-                <div className="flex space-x-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3 self-end sm:self-auto">
                   <PDFGenerator
                     record={record}
-                    className="flex items-center text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
+                    className="flex items-center text-xs sm:text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
                   />
                   <button
                     onClick={() => deleteRecord(index)}
-                    className="flex items-center px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm font-medium hover:bg-red-100 transition-colors"
+                    className="flex items-center px-2 sm:px-3 py-1 bg-red-50 text-red-600 rounded-full text-xs sm:text-sm font-medium hover:bg-red-100 transition-colors"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1"
+                      className="h-3 sm:h-4 w-3 sm:w-4 mr-1"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -143,13 +143,13 @@ function AttendanceHistory({ history, setHistory }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 p-4 sm:p-6">
                 <div className="border border-green-100 rounded-lg overflow-hidden">
-                  <div className="bg-green-50 px-4 py-3 border-b border-green-100 flex justify-between items-center">
-                    <h4 className="font-medium text-green-800 flex items-center">
+                  <div className="bg-green-50 px-3 sm:px-4 py-2 sm:py-3 border-b border-green-100 flex justify-between items-center">
+                    <h4 className="font-medium text-green-800 flex items-center text-sm sm:text-base">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 mr-2 text-green-600"
+                        className="h-4 sm:h-5 w-4 sm:w-5 mr-2 text-green-600"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -177,14 +177,14 @@ function AttendanceHistory({ history, setHistory }) {
                       record.present.map((student) => (
                         <div
                           key={student.rollNumber}
-                          className="p-4 hover:bg-green-50 transition-colors"
+                          className="p-3 sm:p-4 hover:bg-green-50 transition-colors"
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-gray-900 text-sm sm:text-base">
                                 {student.name}
                               </p>
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                 Roll No: {student.rollNumber}
                               </p>
                             </div>
@@ -201,7 +201,7 @@ function AttendanceHistory({ history, setHistory }) {
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
+                                className="h-4 sm:h-5 w-4 sm:w-5"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -218,7 +218,7 @@ function AttendanceHistory({ history, setHistory }) {
                         </div>
                       ))
                     ) : (
-                      <div className="p-4 text-center text-gray-500">
+                      <div className="p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500">
                         No students were present this day
                       </div>
                     )}
@@ -226,11 +226,11 @@ function AttendanceHistory({ history, setHistory }) {
                 </div>
 
                 <div className="border border-red-100 rounded-lg overflow-hidden">
-                  <div className="bg-red-50 px-4 py-3 border-b border-red-100 flex justify-between items-center">
-                    <h4 className="font-medium text-red-800 flex items-center">
+                  <div className="bg-red-50 px-3 sm:px-4 py-2 sm:py-3 border-b border-red-100 flex justify-between items-center">
+                    <h4 className="font-medium text-red-800 flex items-center text-sm sm:text-base">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 mr-2 text-red-600"
+                        className="h-4 sm:h-5 w-4 sm:w-5 mr-2 text-red-600"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -258,14 +258,14 @@ function AttendanceHistory({ history, setHistory }) {
                       record.absent.map((student) => (
                         <div
                           key={student.rollNumber}
-                          className="p-4 hover:bg-red-50 transition-colors"
+                          className="p-3 sm:p-4 hover:bg-red-50 transition-colors"
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-gray-900 text-sm sm:text-base">
                                 {student.name}
                               </p>
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                 Roll No: {student.rollNumber}
                               </p>
                             </div>
@@ -282,7 +282,7 @@ function AttendanceHistory({ history, setHistory }) {
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
+                                className="h-4 sm:h-5 w-4 sm:w-5"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -299,7 +299,7 @@ function AttendanceHistory({ history, setHistory }) {
                         </div>
                       ))
                     ) : (
-                      <div className="p-4 text-center text-gray-500">
+                      <div className="p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500">
                         All students were present this day
                       </div>
                     )}

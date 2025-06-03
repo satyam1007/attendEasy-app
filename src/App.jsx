@@ -105,22 +105,53 @@ function App() {
       (s) => s.class === selectedClass
     );
 
-    const presentStudents = currentClassStudents.filter(
+    // Get current checkbox states
+    const newlyPresentStudents = currentClassStudents.filter(
       (student) => attendance[selectedClass]?.[student.rollNumber]
     );
 
-    const absentStudents = currentClassStudents.filter(
-      (student) => !attendance[selectedClass]?.[student.rollNumber]
+    // Check if record for this date already exists
+    const existingRecordIndex = history.findIndex(
+      (record) => record.date === date && record.class === selectedClass
     );
 
-    const newRecord = {
-      date,
-      class: selectedClass,
-      present: presentStudents,
-      absent: absentStudents,
-    };
+    if (existingRecordIndex >= 0) {
+      // Update existing record - merge with previous data
+      const updatedHistory = [...history];
+      const existingRecord = updatedHistory[existingRecordIndex];
 
-    setHistory([...history, newRecord]);
+      // Combine previous present students with newly marked ones
+      const combinedPresent = [
+        ...new Set([...existingRecord.present, ...newlyPresentStudents]),
+      ];
+
+      // Absent students are all class students not in present list
+      const combinedAbsent = currentClassStudents.filter(
+        (student) =>
+          !combinedPresent.some((p) => p.rollNumber === student.rollNumber)
+      );
+
+      updatedHistory[existingRecordIndex] = {
+        date,
+        class: selectedClass,
+        present: combinedPresent,
+        absent: combinedAbsent,
+      };
+      setHistory(updatedHistory);
+    } else {
+      // Add new record (original logic)
+      const absentStudents = currentClassStudents.filter(
+        (student) => !attendance[selectedClass]?.[student.rollNumber]
+      );
+
+      const newRecord = {
+        date,
+        class: selectedClass,
+        present: newlyPresentStudents,
+        absent: absentStudents,
+      };
+      setHistory([...history, newRecord]);
+    }
 
     // Reset attendance for current class
     setAttendance((prev) => ({
@@ -137,12 +168,12 @@ function App() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header Section */}
-      <header className="mb-8">
-        <div className="flex justify-between items-center">
+      <header className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
           <div className="flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-indigo-600 mr-3"
+              className="h-8 sm:h-10 w-8 sm:w-10 text-indigo-600 mr-2 sm:mr-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -154,11 +185,11 @@ function App() {
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
               />
             </svg>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               AttendEase
             </h1>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-xs sm:text-sm text-gray-500 self-end sm:self-auto">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
@@ -167,7 +198,7 @@ function App() {
             })}
           </div>
         </div>
-        <p className="text-gray-600 mt-2">
+        <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
           Streamlined classroom attendance management system
         </p>
       </header>
