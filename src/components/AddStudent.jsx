@@ -1,7 +1,7 @@
 import "../App.css";
 import { useState } from "react";
 
-const AddStudent = ({ selectedClass, onAddStudent }) => {
+function AddStudent({ selectedClass, onAddStudent }) {
   const [name, setName] = useState("");
   const [rollNumber, setRollNumber] = useState("");
   const [image, setImage] = useState(null);
@@ -10,40 +10,39 @@ const AddStudent = ({ selectedClass, onAddStudent }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate image
-    if (!file.type.match("image/jpeg") && !file.type.match("image/png")) {
-      setError("Only JPG/PNG images are allowed");
-      return;
-    }
-    if (file.size > 1024 * 1024) {
-      // 1MB
-      setError("Image size must be less than 1MB");
-      return;
-    }
-
     setError("");
 
-    // Preview image
+    if (!file) {
+      setImage(null);
+      setImagePreview(null);
+      return;
+    }
+
+    // Validate file type
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setError("Only JPG/PNG images are allowed.");
+      return;
+    }
+
+    // Validate file size (1MB)
+    if (file.size > 1024 * 1024) {
+      setError("Image size must be less than 1MB.");
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target.result);
+    reader.onload = (event) => {
+      setImagePreview(event.target.result);
+      setImage(event.target.result);
     };
     reader.readAsDataURL(file);
-
-    // Convert to base64 for storage
-    const base64Reader = new FileReader();
-    base64Reader.onload = (e) => {
-      setImage(e.target.result);
-    };
-    base64Reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!name.trim() || !rollNumber.trim()) {
-      setError("Name and Roll Number are required");
+      setError("Name and Roll Number are required.");
       return;
     }
 
@@ -51,11 +50,11 @@ const AddStudent = ({ selectedClass, onAddStudent }) => {
       name: name.trim(),
       rollNumber: rollNumber.trim(),
       class: selectedClass,
-      image: image || null,
+      image: image,
     };
 
-    const success = onAddStudent(student);
-    if (success) {
+    if (onAddStudent(student)) {
+      // Reset form on success
       setName("");
       setRollNumber("");
       setImage(null);
@@ -65,53 +64,57 @@ const AddStudent = ({ selectedClass, onAddStudent }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+    <div className="bg-white p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Add Student</h2>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="name">
             Name
           </label>
           <input
+            id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="rollNumber">
             Roll Number
           </label>
           <input
+            id="rollNumber"
             type="text"
             value={rollNumber}
             onChange={(e) => setRollNumber(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="image">
             Profile Image (optional)
           </label>
           <input
+            id="image"
             type="file"
-            accept="image/jpeg,image/png"
+            accept="image/jpeg, image/png"
             onChange={handleImageChange}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {imagePreview && (
             <div className="mt-2">
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="h-20 w-20 object-cover rounded-full"
+                className="h-20 w-20 object-cover rounded-full border border-gray-300"
               />
             </div>
           )}
@@ -119,13 +122,13 @@ const AddStudent = ({ selectedClass, onAddStudent }) => {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
         >
           Add Student
         </button>
       </form>
     </div>
   );
-};
+}
 
 export default AddStudent;
