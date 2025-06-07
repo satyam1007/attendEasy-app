@@ -1,117 +1,183 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-function PDFGenerator({ record }) {
+function PDFGenerator({ record, mobile = false }) {
   const generatePDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-    // Header bar
-    doc.setFillColor(63, 81, 181); // Blue
-    doc.rect(0, 0, 220, 30, "F");
+    // School/Organization Header
+    doc.setFillColor(59, 130, 246); // Blue-600
+    doc.rect(0, 0, 210, 25, "F");
 
-    doc.setFont("helvetica");
-    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
-    doc.text("Attendance Report", 105, 20, { align: "center" });
+    doc.text("School Name", 105, 18, { align: "center" });
 
-    doc.setTextColor(0, 0, 0);
+    // Report Title
+    doc.setFontSize(16);
+    doc.setTextColor(59, 130, 246);
+    doc.text("ATTENDANCE REPORT", 105, 35, { align: "center" });
+
+    // Report Details
     doc.setFontSize(12);
-    doc.text(`Date: ${record.date}`, 14, 40);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Class: ${record.class}`, 15, 45);
+    doc.text(`Date: ${record.date}`, 105, 45, { align: "center" });
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 195, 45, {
+      align: "right",
+    });
 
-    // Summary
-    doc.setFontSize(14);
-    doc.setTextColor(63, 81, 181);
-    doc.text("Summary", 14, 55);
+    // Summary Section
+    doc.setDrawColor(200, 200, 200);
+    doc.line(15, 50, 195, 50);
 
     const total = record.present.length + record.absent.length;
-    const presentCount = record.present.length;
-    const absentCount = record.absent.length;
+    const presentPercentage =
+      total > 0 ? Math.round(record.present.length / total) * 100 : 0;
 
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Total Students: ${total}`, 20, 65);
-    doc.setTextColor(46, 125, 50);
-    doc.text(
-      `Present: ${presentCount} (${Math.round((presentCount / total) * 100)}%)`,
-      20,
-      75
-    );
-    doc.setTextColor(198, 40, 40);
-    doc.text(
-      `Absent: ${absentCount} (${Math.round((absentCount / total) * 100)}%)`,
-      20,
-      85
-    );
+    doc.setFontSize(14);
+    doc.setTextColor(59, 130, 246);
+    doc.text("ATTENDANCE SUMMARY", 15, 60);
 
-    doc.setTextColor(0, 0, 0);
-    doc.setDrawColor(200, 200, 200);
-    doc.line(14, 90, 196, 90);
-
-    doc.setFontSize(16);
-    doc.text("Attendance List", 14, 105);
-
-    // Prepare table data with metadata (status and row color)
-    const tableData = [
-      ...record.present.map((s) => ({
-        status: "Present",
-        name: s.name,
-        rollNumber: s.rollNumber,
-        rowColor: [232, 245, 233], // Light green
-      })),
-      ...record.absent.map((s) => ({
-        status: "Absent",
-        name: s.name,
-        rollNumber: s.rollNumber,
-        rowColor: [255, 235, 238], // Light red
-      })),
-    ];
-
-    // AutoTable with colored rows
+    // Summary Boxes
     autoTable(doc, {
-      startY: 110,
-      head: [["Status", "Name", "Roll Number"]],
-      body: tableData.map((row) => [row.status, row.name, row.rollNumber]),
-      styles: {
-        fontSize: 11,
-        cellPadding: 4,
-      },
+      startY: 65,
+      head: [["Total", "Present", "Absent", "Percentage"]],
+      body: [
+        [
+          total.toString(),
+          record.present.length.toString(),
+          record.absent.length.toString(),
+          `${presentPercentage}%`,
+        ],
+      ],
       headStyles: {
-        fillColor: [63, 81, 181],
+        fillColor: [59, 130, 246],
         textColor: 255,
+        fontSize: 11,
         halign: "center",
       },
+      bodyStyles: {
+        fontSize: 12,
+        halign: "center",
+        cellPadding: 6,
+      },
+      margin: { left: 15 },
+      tableWidth: 180,
       columnStyles: {
-        0: { halign: "center" },
-        2: { halign: "center" },
+        0: { cellWidth: 45 },
+        1: { cellWidth: 45 },
+        2: { cellWidth: 45 },
+        3: { cellWidth: 45 },
+      },
+    });
+
+    // Student Lists
+    doc.setFontSize(14);
+    doc.setTextColor(59, 130, 246);
+    doc.text("STUDENT ATTENDANCE", 15, 95);
+
+    // Prepare table data with status colors
+    const tableData = [
+      ...record.present.map((s) => ({
+        ...s,
+        status: "PRESENT",
+        rowColor: [220, 252, 231], // green-100
+      })),
+      ...record.absent.map((s) => ({
+        ...s,
+        status: "ABSENT",
+        rowColor: [254, 226, 226], // red-100
+      })),
+    ].sort((a, b) => a.rollNumber - b.rollNumber); // Sort by roll number
+
+    // Main Attendance Table
+    autoTable(doc, {
+      startY: 100,
+      head: [["Roll No.", "Student Name", "Status"]],
+      body: tableData.map((row) => [row.rollNumber, row.name, row.status]),
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255,
+        fontSize: 11,
+        halign: "center",
+      },
+      bodyStyles: {
+        fontSize: 10,
+        cellPadding: 5,
+      },
+      styles: {
+        lineColor: [200, 200, 200],
+        lineWidth: 0.2,
+      },
+      columnStyles: {
+        0: { cellWidth: 30, halign: "center" },
+        1: { cellWidth: "auto" },
+        2: { cellWidth: 30, halign: "center" },
       },
       didParseCell: (data) => {
         if (data.section === "body") {
           const rowIndex = data.row.index;
-          const bgColor = tableData[rowIndex].rowColor;
-          data.cell.styles.fillColor = bgColor;
+          data.cell.styles.fillColor = tableData[rowIndex].rowColor;
+          data.cell.styles.textColor = [0, 0, 0];
+
+          // Bold status text
+          if (data.column.index === 2) {
+            data.cell.styles.fontStyle = "bold";
+            data.cell.styles.textColor =
+              tableData[rowIndex].status === "PRESENT"
+                ? [22, 163, 74] // green-600
+                : [220, 38, 38]; // red-600
+          }
         }
       },
+      margin: { left: 15, right: 15 },
     });
 
     // Footer
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setFontSize(10);
+      doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
-      doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
-      doc.text("Generated by Attendance System", 195, 285, { align: "right" });
+      doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: "center" });
+      doc.text("Generated by School Attendance System", 195, 287, {
+        align: "right",
+      });
     }
 
-    doc.save(`Attendance_Report_${record.date.replace(/\//g, "-")}.pdf`);
+    doc.save(
+      `Attendance_${record.class}_${record.date.replace(/\//g, "-")}.pdf`
+    );
   };
 
   return (
     <button
       onClick={generatePDF}
-      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-md"
+      className={`${
+        mobile ? "w-full" : ""
+      } bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md transition-colors shadow-sm text-sm sm:text-base flex items-center justify-center gap-1.5`}
     >
-      Download PDF Report
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4 sm:h-5 sm:w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      {mobile ? "PDF Report" : "Download PDF"}
     </button>
   );
 }

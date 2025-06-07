@@ -295,10 +295,33 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">AttendEase</h1>
-          <div className="text-lg">{formatDate(new Date(), true)}</div>
+      <header className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white p-4 sm:p-6 shadow-lg">
+        <div className="container mx-auto flex flex-row justify-between items-center">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="p-1 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+              {/* Icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 sm:h-8 sm:w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+            </div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-300">
+              AttendEase
+            </h1>
+          </div>
+          <div className="text-sm sm:text-base md:text-lg font-medium bg-white/10 px-3 py-1 sm:px-4 sm:py-2 rounded-full backdrop-blur-sm">
+            {formatDate(new Date(), true)}
+          </div>
         </div>
       </header>
 
@@ -340,9 +363,24 @@ function App() {
         {hasUnsavedChanges && (
           <button
             onClick={saveAttendance}
-            className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors"
+            className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 z-50 flex items-center space-x-2"
           >
-            Save Today's Attendance
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span className="hidden sm:inline">Save Today's Attendance</span>
+            <span className="inline sm:hidden">Save</span>
           </button>
         )}
       </main>
