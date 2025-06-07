@@ -38,7 +38,7 @@ function PDFGenerator({ record, mobile = false }) {
 
     const total = record.present.length + record.absent.length;
     const presentPercentage =
-      total > 0 ? Math.round(record.present.length / total) * 100 : 0;
+      total > 0 ? Math.round((record.present.length / total) * 100) : 0;
 
     doc.setFontSize(14);
     doc.setTextColor(59, 130, 246);
