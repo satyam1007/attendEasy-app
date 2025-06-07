@@ -24,9 +24,9 @@ function AddStudent({ selectedClass, onAddStudent }) {
       return;
     }
 
-    // Validate file size (1MB)
-    if (file.size > 1024 * 1024) {
-      setError("Image size must be less than 1MB.");
+    // Validate file size (3MB)
+    if (file.size > 3 * 1024 * 1024) {
+      setError("Image size must be less than 3MB.");
       return;
     }
 
